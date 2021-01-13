@@ -95,7 +95,7 @@ function enterApp() {
             return;
         }
         console.log("volume_up thread start")
-        //按不知道
+        //按不知道 （检测页面）
         var thread1 = threads.start(function(){
             if (getUI("tv_unknown")) {
                 thread2.join();
@@ -105,7 +105,7 @@ function enterApp() {
             }
         });
 
-        //按不认识
+        //按不认识 （下一个页面）
         var thread2 = threads.start(function(){
             if (getUI("btn_unknown")) {
                 thread1.join();
@@ -115,25 +115,25 @@ function enterApp() {
             }
         });
 
-        //重读
-        var thread3 = threads.start(function () {
+        //不认识重读 （按了不认识之后，下一个页面） 例句回顾
+        var thread3 = threads.start(function (paras) {
+            if (getUI("tv_next") && getUI("btn_unknown") == null) {
+                thread1.join();
+                thread2.join();
+                thread4.join();
+                clickAudio();
+            }
+        });
+
+        //重读 （单词小结页面）
+        var thread4 = threads.start(function () {
             if (words != null && getUI("btn_control")) {
                 var allWords = getWords()
                 var count = allWords.length - words.length - 1;
                 thread1.join();
                 thread2.join();
-                thread4.join();
-                clickWords(allWords, count);
-            }
-        });
-
-        //不认识重读 例句回顾
-        var thread4 = threads.start(function (paras) {
-            if (getUI("tv_next") && getUI("btn_unknown") == null) {
-                thread1.join();
-                thread2.join();
                 thread3.join();
-                clickAudio();
+                clickWords(allWords, count);
             }
         });
 
@@ -152,47 +152,54 @@ function enterApp() {
             return;
         }
         console.log("volume_down thread start")
-        //按下一个
-        var thread1 = threads.start(function(){
-            if (getUI("tv_next")) {
-                thread2.join();
-                thread3.join();
-                clickNext();
-            }
-        });
 
-        //按我认识
-        var thread2 = threads.start(function(){
+        //按我认识 （检测页面）
+        var thread1 = threads.start(function(){
             if (getUI("tv_known")) {
-                thread1.join();
+                thread2.join();
                 thread3.join();
                 clickKnown();
             }
         });
 
-        //读单词或者按下一组
+        //按下一个 （下一个页面）
+        var thread2 = threads.start(function(){
+            if (getUI("tv_next")) {
+                thread1.join();
+                thread3.join();
+                clickNext();
+            }
+        });
+
+        //读单词或者按下一组 （单词小结页面）
         var thread3 = threads.start(function(){
-            if (words == null && getUI("btn_control")) {
-                words = getWords();
-            }
-            if (words != null && words.length == 0){
-                words = null;
-                thread1.join();
-                thread2.join();
-                clickNextGroup();
-                return;
-            }
-            if (words && words.length > 0) {
-                thread1.join();
-                thread2.join();
-                if (clickWords(words, 0)) {
-                    words.shift();
-                }else{
-                    //释义遮挡切换丢失对象
-                    words = null;
+            if (getUI("btn_control")) {
+                if (words == null) {
+                    words = getWords();
                 }
+                //读完了,下一组
+                if (words != null && words.length == 0) {
+                    words = null;
+                    thread1.join();
+                    thread2.join();
+                    clickNextGroup();
+                    return;
+                }
+                //读单词
+                if (words && words.length > 0) {
+                    thread1.join();
+                    thread2.join();
+                    if (clickWords(words, 0)) {
+                        words.shift();
+                    }else{
+                        //释义遮挡切换丢失对象
+                        words = null;
+                    }
+                }
+            }else{
+                //不在单词小结页面
+                words = null;
             }
-            
         });
 
         thread1.join();

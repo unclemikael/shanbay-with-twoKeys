@@ -6,7 +6,7 @@
 
 ## 使用方法
 
-+ **下载** [shanbay-with-twoKeys.js](https://github.com/unclemikael/shanbay-with-twoKeys/releases/download/v1.0/shanbay-with-twoKeys.js) **到手机，Auto.js导入脚本**
++ **下载** [shanbay-with-twoKeys.js](https://github.com/unclemikael/shanbay-with-twoKeys/releases/download/v1.1/shanbay-with-twoKeys.js) **到手机，Auto.js导入脚本**
 
 + **先调整好媒体音量，再运行脚本**
 
