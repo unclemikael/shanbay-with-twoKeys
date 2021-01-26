@@ -23,8 +23,10 @@ function getWords() {
 
 function clickWords(words, n) {
     if (n <= words.length) {
-        if (words[n].findOne(id("iv_shelter"))) {
-            clickUI(words[n], "/iv_shelter")
+        if (words[n].findOne(id("tv_ipa"))) {
+            
+        }else{
+            clickUI(words[n], "/tv_ipa")
         }
         sleep(0);
         return clickUI(words[n].findOne(id("iv_audio")), "/iv_audio");
